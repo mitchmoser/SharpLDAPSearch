@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
-using System.DirectoryServices.AccountManagement;
 using System.Linq;
-using System.Text;
 
 namespace SharpLDAPSearch
 {
@@ -35,8 +33,6 @@ namespace SharpLDAPSearch
                 Environment.Exit(0);
             }
 
-            //string[] searchProperties = { "name" };
-
             mySearcher.SizeLimit = int.MaxValue;
             mySearcher.PageSize = int.MaxValue;
 
@@ -48,19 +44,19 @@ namespace SharpLDAPSearch
                 // Get the properties of the 'mySearchResult'.  
                 ResultPropertyCollection myResultPropColl;
                 myResultPropColl = mySearchResult.Properties;
-                foreach (string myKey in myResultPropColl.PropertyNames)
+                
+                // return only specified fields
+                if (searchProperties.Count > 0)
                 {
-                    if (searchProperties.Count > 0)
+                    foreach (string attr in searchProperties)
                     {
-                        if (searchProperties.Contains(myKey.ToString().ToLower()))
-                        {
-                            foreach (Object myCollection in myResultPropColl[myKey])
-                            {
-                                Console.WriteLine("{0} - {1}", myKey, myCollection);
-                            }
-                        }
+                        Console.WriteLine(mySearchResult.Properties[attr][0].ToString());
                     }
-                    else
+                }
+                // if no fields specified, return all
+                else
+                {
+                    foreach (string myKey in myResultPropColl.PropertyNames)
                     {
                         foreach (Object myCollection in myResultPropColl[myKey])
                         {
@@ -68,18 +64,7 @@ namespace SharpLDAPSearch
                         }
                     }
                 }
-                /*
-                foreach (string myKey in myResultPropColl.PropertyNames)
-                {
-                    if (searchProperties.Contains(myKey.ToString().ToLower()))
-                    {
-                        foreach (Object myCollection in myResultPropColl[myKey])
-                        {
-                            Console.WriteLine("{0} - {1}", myKey, myCollection);
-                        }
-                    }
-                }
-                */
+
                 mySearcher.Dispose();
                 entry.Dispose(); ;
             }
