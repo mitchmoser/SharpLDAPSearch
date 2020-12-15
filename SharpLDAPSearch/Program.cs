@@ -45,15 +45,19 @@ namespace SharpLDAPSearch
                 ResultPropertyCollection myResultPropColl;
                 myResultPropColl = mySearchResult.Properties;
                 
-                // return only specified fields
+                // return only specified attributes
                 if (searchProperties.Count > 0)
                 {
                     foreach (string attr in searchProperties)
                     {
-                        Console.WriteLine(mySearchResult.Properties[attr][0].ToString());
+                        // some attributes - such as memberof - have multiple values
+                        for (int i = 0; i < mySearchResult.Properties[attr].Count; i++)
+                        {
+                            Console.WriteLine(mySearchResult.Properties[attr][i].ToString());
+                        }
                     }
                 }
-                // if no fields specified, return all
+                // if no attributes specified, return all
                 else
                 {
                     foreach (string myKey in myResultPropColl.PropertyNames)
