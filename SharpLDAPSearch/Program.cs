@@ -36,43 +36,49 @@ namespace SharpLDAPSearch
             mySearcher.SizeLimit = int.MaxValue;
             mySearcher.PageSize = int.MaxValue;
 
-            foreach (SearchResult mySearchResult in mySearcher.FindAll())
+            try
             {
-                // Get the 'DirectoryEntry' that corresponds to 'mySearchResult'.  
-                DirectoryEntry myDirectoryEntry = mySearchResult.GetDirectoryEntry();
-                
-                // Get the properties of the 'mySearchResult'.  
-                ResultPropertyCollection myResultPropColl;
-                myResultPropColl = mySearchResult.Properties;
-                
-                // return only specified attributes
-                if (searchProperties.Count > 0)
+                foreach (SearchResult mySearchResult in mySearcher.FindAll())
                 {
-                    foreach (string attr in searchProperties)
-                    {
-                        // some attributes - such as memberof - have multiple values
-                        for (int i = 0; i < mySearchResult.Properties[attr].Count; i++)
-                        {
-                            Console.WriteLine(mySearchResult.Properties[attr][i].ToString());
-                        }
-                    }
-                }
-                // if no attributes specified, return all
-                else
-                {
-                    foreach (string myKey in myResultPropColl.PropertyNames)
-                    {
-                        foreach (Object myCollection in myResultPropColl[myKey])
-                        {
-                            Console.WriteLine("{0} - {1}", myKey, myCollection);
-                        }
-                    }
-                }
+                    // Get the 'DirectoryEntry' that corresponds to 'mySearchResult'.  
+                    DirectoryEntry myDirectoryEntry = mySearchResult.GetDirectoryEntry();
 
-                mySearcher.Dispose();
-                entry.Dispose(); ;
+                    // Get the properties of the 'mySearchResult'.  
+                    ResultPropertyCollection myResultPropColl;
+                    myResultPropColl = mySearchResult.Properties;
+
+                    // return only specified attributes
+                    if (searchProperties.Count > 0)
+                    {
+                        foreach (string attr in searchProperties)
+                        {
+                            // some attributes - such as memberof - have multiple values
+                            for (int i = 0; i < mySearchResult.Properties[attr].Count; i++)
+                            {
+                                Console.WriteLine(mySearchResult.Properties[attr][i].ToString());
+                            }
+                        }
+                    }
+                    // if no attributes specified, return all
+                    else
+                    {
+                        foreach (string myKey in myResultPropColl.PropertyNames)
+                        {
+                            foreach (Object myCollection in myResultPropColl[myKey])
+                            {
+                                Console.WriteLine("{0} - {1}", myKey, myCollection);
+                            }
+                        }
+                    }
+
+                    mySearcher.Dispose();
+                    entry.Dispose(); ;
+                }
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] LDAP Search Error: {0}", ex.Message.Trim());
+            }
         }
     }
 }
